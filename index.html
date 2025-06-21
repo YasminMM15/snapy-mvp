@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Snaapy - Compara y compra fácil</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+  header { background: hsl(181, 39%, 49%); color: white; padding: 1rem; text-align: center; }
+  main { padding: 1rem; max-width: 900px; margin: auto; }
+  input[type="search"] { width: 100%; padding: 0.5rem; font-size: 1rem; }
+  .categories { margin: 1rem 0; display: flex; gap: 1rem; overflow-x: auto; }
+  .category { background: #ddd; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; white-space: nowrap; }
+  .products { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 1rem; }
+  .product { border: 1px solid #ccc; padding: 1rem; border-radius: 8px; }
+  .product h3 { margin-top: 0; }
+  .product button { background: #4CAF50; color: white; border: none; padding: 0.5rem; border-radius: 5px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Snaapy</h1>
+  <p>Compara y compra fácil</p>
+</header>
+
+<main>
+  <input type="search" id="search" placeholder="Busca productos..." oninput="filterProducts()" />
+
+  <div class="categories" id="categories">
+    <div class="category" onclick="filterCategory('Electrónica')">Electrónica</div>
+    <div class="category" onclick="filterCategory('Moda')">Moda</div>
+    <div class="category" onclick="filterCategory('Hogar')">Hogar</div>
+    <div class="category" onclick="filterCategory('Libros')">Libros</div>
+  </div>
+
+  <div class="products" id="products"></div>
+</main>
+
+<script>
+  const productsData = [
+    { id: 1, name: "Audífonos inalámbricos", category: "Electrónica", prices: [{store:"Amazon", price:120}, {store:"Mercado Libre", price:115}] },
+    { id: 2, name: "Camisa casual", category: "Moda", prices: [{store:"Zara", price:30}, {store:"Amazon", price:25}] },
+    { id: 3, name: "Lámpara de escritorio", category: "Hogar", prices: [{store:"IKEA", price:45}, {store:"Amazon", price:50}] },
+    { id: 4, name: "Libro de ciencia ficción", category: "Libros", prices: [{store:"Amazon", price:10}, {store:"Mercado Libre", price:9}] }
+  ];
+
+  let filteredCategory = "";
+  let filteredText = "";
+
+  function displayProducts() {
+    const container = document.getElementById("products");
+    container.innerHTML = "";
+
+    const filtered = productsData.filter(p => {
+      const matchesCategory = filteredCategory ? p.category === filteredCategory : true;
+      const matchesText = filteredText ? p.name.toLowerCase().includes(filteredText.toLowerCase()) : true;
+      return matchesCategory && matchesText;
+    });
+
+    filtered.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "product";
+
+      let pricesHtml = "<ul>";
+      p.prices.forEach(store => {
+        pricesHtml += `<li>${store.store}: $${store.price}</li>`;
+      });
+      pricesHtml += "</ul>";
+
+      div.innerHTML = `<h3>${p.name}</h3>${pricesHtml}<button onclick="alert('Ir a tienda para comprar')">Comprar</button>`;
+      container.appendChild(div);
+    });
+
+    if(filtered.length === 0) {
+      container.innerHTML = "<p>No hay productos que coincidan.</p>";
+    }
+  }
+
+  function filterCategory(category) {
+    filteredCategory = filteredCategory === category ? "" : category;
+    displayProducts();
+  }
+
+  function filterProducts() {
+    filteredText = document.getElementById("search").value;
+    displayProducts();
+  }
+
+  displayProducts();
+</script>
+
+</body>
+</html>
